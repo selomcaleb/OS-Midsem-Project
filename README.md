@@ -54,7 +54,7 @@ Different workloads are simulated with varying process sizes and memory access p
 
 ## Contributors
 - [Chudah Yakung](https://github.com/chudah1)
-- [Oheneba Dade](https://github.com/selomcaleb)
-- [Selom Caleb Arcmann-Ackummey](https://github.com/Oheneba-Dade)
+- [Oheneba Dade](https://github.com/Oheneba-Dade)
+- [Selom Caleb Arcmann-Ackummey](https://github.com/selomcaleb)
 
    
