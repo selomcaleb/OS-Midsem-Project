@@ -13,15 +13,15 @@ This project implements a memory management system using paging techniques in C.
 
 ### Define Memory Spaces
 
-- Virtual Memory Size: 4096 bytes (4 KB)
-- Physical Memory Size: 2048 bytes (2 KB)
+- Virtual Memory Size: 
+- Physical Memory Size: 2
 
 ### Page Size Calculation
 
-- Chosen Page Size: 512 bytes
+- Chosen Page Size: 
 
-- Number of Pages = Virtual Memory Size / Page Size = 4096 bytes / 512 bytes = 8 pages
-- Number of Frames = Physical Memory Size / Page Size = 2048 bytes / 512 bytes = 4 frames
+- Number of Pages = 
+- Number of Frames = 
 
 ### Data Structures
 
