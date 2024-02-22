@@ -4,6 +4,12 @@
 
 #define PHYSICAL_MEMORY_SIZE 1024
 #define VIRTUAL_MEMORY_SIZE 4096
+#define PAGE_SIZE 512
+
+//calculate the number of pages and frames
+#define NUM_PAGES VIRTUAL_MEMORY_SIZE / PAGE_SIZE
+#define NUM_FRAMES PHYSICAL_MEMORY_SIZE / PAGE_SIZE
+
 
 typedef struct {
     int frame_number;
