@@ -1,4 +1,4 @@
-int* translateAddress(unsigned short virtual_address) {
+int* extractAddressBits(unsigned short virtual_address) {
     // Create an array to store the extracted values
     static int result[3];
 
