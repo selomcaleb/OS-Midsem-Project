@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-int memorySizes[] = {1024, 1536, 2048, 2560, 3072, 3584, 4096};
+int memorySizes[] = {1024, 1536, 2048, 2560, 3072, 3584, 4096}; //divisible by the Page Size = 512
 int numSizes = sizeof(memorySizes) / sizeof(memorySizes[0]);
 
 /**
