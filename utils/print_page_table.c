@@ -1,7 +1,5 @@
-#include <stdlib.h>
 #include <stdio.h>
 #include "page_table_entry.h"
-#include "create_page_table.h"
 
 void print_page_table(PageTableEntry* pageTable) {
     printf("Page Table:\n");

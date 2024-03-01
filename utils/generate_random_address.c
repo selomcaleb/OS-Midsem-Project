@@ -64,7 +64,3 @@ int binaryToDecimal(int binary) {
 
     return decimal;
 }
-
-int main() {
-    
-}
