@@ -4,5 +4,6 @@
 
 PageTableEntry* createPageTable(int numPages);
 PageTableEntry** createMasterPageTable();
+void intializeMasterTable(MasterPageTable* masterPageTable);
 
 #endif //OS_MIDSEM_PROJECT_CREATE_PAGE_TABLE_H

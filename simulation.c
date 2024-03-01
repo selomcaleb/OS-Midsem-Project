@@ -10,6 +10,7 @@
 #include <time.h>
 #include "tlb.h"
 #include <math.h>
+#include <unistd.h>
 
 #define MASTER_PAGE_SIZE 16
 #define OFFSET_SIZE 32
@@ -30,8 +31,10 @@ void displayStatistics(FrameTable *frameTable, int numberAccess, int hits, int p
 }
 
 int main() {
+    srand(time(NULL));
     // Create the master page table
-    PageTableEntry **masterPageTable = createMasterPageTable();
+   MasterPageTable masterPageTable;
+    intializeMasterTable(&masterPageTable);
 
     //initialize the TLB
     TLB tlb;
@@ -52,7 +55,7 @@ int main() {
     printf("+------------+----------------+------+----------+-------------+-------------------+\n");
 
     // Create the processes
-    int NUM_PROCESSES = 6;
+    int NUM_PROCESSES = 8;
 
     Process *processes = createProcesses(NUM_PROCESSES);
     printf("+------------+----------------+------+----------+-------------+-------------------+\n");
@@ -65,8 +68,11 @@ int main() {
         printf("The Number of Pages Required for This Process with ID = %d are %d\n", processes[i].processID, numPagesRequired);
 
         // First generate the master page index (randomly)
-        srand(time(NULL));
-        int masterPageIndexBaseTen = rand() % MASTER_PAGE_SIZE;
+        sleep(1);
+        int masterPageIndexBaseTen = rand() % MASTER_PAGE_TABLE_SIZE;
+        printf("The master page index is %d", masterPageIndexBaseTen);
+        sleep(1);
+
         int masterPageIndexBaseTwo = generatePageIndex(masterPageIndexBaseTen);
 
         // Create Page Table
@@ -74,7 +80,10 @@ int main() {
         PageTableEntry *pageTable = createPageTable(numPagesRequired);
 
         //Add The Page Table To The Master Page Table
-        masterPageTable[masterPageIndexBaseTen] = pageTable;
+        MasterEntry masterEntry;
+        masterEntry.page_number = masterPageIndexBaseTen;
+        masterEntry.pte =  pageTable;
+        masterPageTable.entries[masterPageIndexBaseTen] = masterEntry;
 
         // Inner Page Indexes Allocated
         int pageIndexesAllocated[numPagesRequired];
@@ -84,11 +93,12 @@ int main() {
 
         // assign index to each page entry in the page table
         for (int j = 0; j < numPagesRequired; j++) {
-            srand(time(NULL));
             int innerPageIndexBaseTen = j;
             int innerPageIndexBaseTwo = generatePageIndex(innerPageIndexBaseTen);
             pageIndexesAllocated[j] = innerPageIndexBaseTwo;
+            sleep(1);
             int offsetBaseTen = rand() * numPagesRequired;
+            sleep(1);
             int offsetBaseTwo = generateOffset(offsetBaseTen);
             offsetsAllocated[j] = offsetBaseTwo;
 
@@ -142,15 +152,15 @@ int main() {
                     updateTLB(&tlb, masterPageIndexBaseTen, &pageTable);
 
                     // access the frame
-                    PageTableEntry* entry = masterPageTable[masterPageIndexBaseTen];
-                    int frameNumber = entry->frame_number;
+                    MasterEntry entry = masterPageTable.entries[masterPageIndexBaseTen];
+                    int frameNumber =entry.pte[l].frame_number;
                     printf("The Frame Number for Page Entry #%d of Process Number %d is: %d\n", pageIndexesAllocated[l],
                            processes[i].processID, frameNumber);
                 }
             } else {
                 hits += 1;
-                PageTableEntry* entry = masterPageTable[masterPageIndexBaseTen];
-                int frameNumber = entry->frame_number;
+                MasterEntry entry = masterPageTable.entries[masterPageIndexBaseTen];
+                int frameNumber =entry.pte[l].frame_number;
                 printf("The Frame Number for Page Entry #%d of Process Number %d is: %d\n", pageIndexesAllocated[l],
                        processes[i].processID, frameNumber);
             }

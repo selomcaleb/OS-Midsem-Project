@@ -1,5 +1,6 @@
 #ifndef OS_MIDSEM_PROJECT_STRUCT_H
 #define OS_MIDSEM_PROJECT_STRUCT_H
+#define MASTER_PAGE_TABLE_SIZE 16
 
 /**
  * The above type defines a structure representing an entry in a page table with fields for frame
@@ -14,6 +15,21 @@ typedef struct {
     int frame_number;
     int valid;
 } PageTableEntry;
+
+typedef struct {
+    int capacity;
+    PageTableEntry *entries;
+} PageTable;
+
+
+typedef struct{
+    int page_number;
+    PageTableEntry* pte;
+}MasterEntry;
+
+typedef struct{
+    MasterEntry entries[MASTER_PAGE_TABLE_SIZE];
+}MasterPageTable;
 
 #endif //OS_MIDSEM_PROJECT_STRUCT_H
 

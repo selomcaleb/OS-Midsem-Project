@@ -26,16 +26,36 @@ PageTableEntry* createPageTable(int numPages) {
  *
  * @return A pointer to an array of pointers to PageTableEntry is being returned.
  */
-PageTableEntry** createMasterPageTable() {
-    PageTableEntry** masterPageTable = malloc(MASTER_PAGE_TABLE_SIZE * sizeof(PageTableEntry*));
-    if (masterPageTable == NULL) {
-        // Handle memory allocation failure
-        return NULL;
+//PageTable* createMasterPageTable() {
+//    PageTable* masterPageTable = malloc(MASTER_PAGE_TABLE_SIZE * sizeof(PageTableEntry*));
+//    if (masterPageTable == NULL) {
+//        // Handle memory allocation failure
+//        return NULL;
+//    }
+//    for (int i = 0; i < MASTER_PAGE_TABLE_SIZE; i++) {
+//        // Initialize each entry to NULL
+//        masterPageTable[i] = NULL;
+//    }
+//    return masterPageTable;
+//}
+
+PageTable* createMasterPageTable(int capacity) {
+    PageTable* pageTable = malloc(sizeof(PageTable));
+    if (pageTable != NULL) {
+        pageTable->capacity = capacity;
+        pageTable->entries = malloc(capacity * sizeof(PageTableEntry));
+        if (pageTable->entries == NULL) {
+            free(pageTable); // Free previously allocated memory
+            return NULL; // Memory allocation failed for entries
+        }
+        // Initialize entries or set them to NULL if needed
     }
-    for (int i = 0; i < MASTER_PAGE_TABLE_SIZE; i++) {
-        // Initialize each entry to NULL
-        masterPageTable[i] = NULL;
-    }
-    return masterPageTable;
+    return pageTable;
 }
 
+void intializeMasterTable(MasterPageTable* masterPageTable){
+    for(int i=0; i<MASTER_PAGE_TABLE_SIZE; i++){
+        masterPageTable->entries[i].page_number = -1;
+        masterPageTable->entries[i].pte = NULL;
+    }
+}
