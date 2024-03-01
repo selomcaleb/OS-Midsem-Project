@@ -70,7 +70,6 @@ int main() {
         // First generate the master page index (randomly)
         sleep(1);
         int masterPageIndexBaseTen = rand() % MASTER_PAGE_TABLE_SIZE;
-        printf("The master page index is %d", masterPageIndexBaseTen);
         sleep(1);
 
         int masterPageIndexBaseTwo = generatePageIndex(masterPageIndexBaseTen);
@@ -165,10 +164,57 @@ int main() {
                        processes[i].processID, frameNumber);
             }
         }
-        printf("+------------+----------------+------+----------+-------------+-------------------+\n");
-        printFrameTable(&frameTable);
-        displayStatistics(&frameTable, numberAccess, hits, pageFaults, processes[i].processID);
-        printf("\n");
-        printf("\n");
+
+        sleep(1);
+        int randomValueForExtraMemoryAccess = rand() * 10;
+        sleep(1);
+        // No need for extra memory
+        if (randomValueForExtraMemoryAccess >= 7) {
+            printf("+------------+----------------+------+----------+-------------+-------------------+\n");
+            printFrameTable(&frameTable);
+            displayStatistics(&frameTable, numberAccess, hits, pageFaults, processes[i].processID);
+            printf("\n");
+            printf("\n");
+        }
+
+        else {
+            // Request For Memory
+            printf("+------------+----------------+------+----------+-------------+-------------------+\n");
+            printf("Process with ID = %d is Requesting Extra Memory of Size = %d\n", processes[i].processID, processes[i].memoryRequested + 32);
+            int newMemoryRequested = processes[i].memoryRequested + 32;
+            int newNumPagesRequired = calculatePagesRequired(newMemoryRequested);
+            printf("The Number of Pages in the New Page Table Required for This Process with ID = %d are %d\n", processes[i].processID, newNumPagesRequired);
+            printf("+------------+----------------+------+----------+-------------+-------------------+\n");
+
+            // Create Page Table
+            printf("Creating Page Table of Size = %d\n", newNumPagesRequired);
+            PageTableEntry *newPageTable = createPageTable(newNumPagesRequired);
+
+            printf("+------------+----------------+------+----------+-------------+-------------------+\n");
+
+            printf("Assigning Frames To Each Page in the Page Table\n");
+            // first check if there are enough free frames for this process pages coming in
+            int newFreeFrames = trackNumberFreeFrames(&frameTable);
+
+            if (newFreeFrames < newNumPagesRequired) {
+                printf("No free frames available\n");
+                break;
+            }
+
+            //Assign Frames To Each Page in the Page Table
+            for (int k = 0; k < newNumPagesRequired; k++) {
+                int freeFrame = firstFreeFrame(&frameTable);
+                frameTable.frames[freeFrame].pageNumber = k;
+                frameTable.frames[freeFrame].frameNumber = freeFrame;
+                frameTable.frames[freeFrame].processID = processes[i].processID;
+
+                //updating inner page table
+                pageTable[k].frame_number=freeFrame;
+                printf("Assigned Page Entry #%d to Frame Number #%d\n", k, freeFrame);
+            }
+            printf("+------------+----------------+------+----------+-------------+-------------------+\n");
+            printf("+------------+----------------+------+----------+-------------+-------------------+\n");
+        }
     }
+    printf("+-------------------------------Simulation Ended-------------------------------+\n");
 }

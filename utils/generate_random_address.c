@@ -83,5 +83,5 @@ void printGeneratedAddress(int masterPageIndex, int innerPageIndex, int offSet) 
     long long int address = ((long long int)masterPageIndex << 20) | ((long long int)innerPageIndex << 4) | offSet;
 
     // Print as 0b memory address
-    printf("0b%016llx\n", address);
+    printf("0x%016llx\n", address);
 }
