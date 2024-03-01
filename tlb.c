@@ -28,8 +28,6 @@ typedef struct{
 }TLB;
 
 
-int hits = 0;
-int pagefaults = 0;
 
 /**
  * The function initializes a Translation Lookaside Buffer (TLB) by setting all entries to default
@@ -66,31 +64,30 @@ void intializeTLB(TLB* tlb){
 int lookupPageNumber(TLB *tlb, int page_number){
     for (int i = 0; i < TLB_SIZE; i++) {
         if (tlb->entries[i].page_number == page_number) {
-            hits += 1;
-            printf("There is a hit with page number %d\n", page_number);
             return 1;
         }
     }
 
 
-    //printf("There is a page fault accessing page number %d\n", page_number);
-    pagefaults += 1;
     return -1;
 }
 
 
-bool addToTLB(TLB* tlb, int page_number, PageTableEntry** pte){
-	// check if the TLB is full
-	for (int i = 0; i < TLB_SIZE; i++) {
-		if (tlb->entries[i].page_number == -1) {
-			tlb->entries[i].page_number = page_number;
-			tlb->entries[i].pte = pte;
-			tlb->entries[i].lru_counter = tlb->next_lru_counter++;
-			return true;
-		}
-	}
-	return false;
+int addToTLB(TLB* tlb, int page_number, PageTableEntry* pte) {
+    // check if the TLB is full
+    for (int i = 0; i < TLB_SIZE; i++) {
+        if (tlb->entries[i].page_number == page_number) {
+            return 1;
+        }
+        else if (tlb->entries[i].page_number == -1){
+            tlb->entries[i].page_number = page_number;
+            tlb->entries[i].pte = &pte;
+            tlb->entries[i].lru_counter = tlb->next_lru_counter++;
+            return 1;
+        }
 
+    }
+    return 0;
 }
 
 void updateTLB(TLB* tlb, int page_number,PageTableEntry** pte) {
@@ -108,9 +105,12 @@ void updateTLB(TLB* tlb, int page_number,PageTableEntry** pte) {
     tlb->entries[lru_index].lru_counter = tlb->next_lru_counter++;
 }
 
-
-void displayStatics(){
-	printf("The number of page faults are:%d\n", pagefaults);
-	printf("The number of hits are:%d\n", hits);
+void printTLBEntries(TLB* tlb) {
+    printf("TLB Entries:\n");
+    for (int i = 0; i < TLB_SIZE; i++) {
+        printf("Entry %d: Page Number = %d, PTE = %p, LRU Counter = %d\n",
+               i, tlb->entries[i].page_number, tlb->entries[i].pte, tlb->entries[i].lru_counter);
+    }
 }
+
 

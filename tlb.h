@@ -18,8 +18,8 @@ typedef struct{
 
 void intializeTLB(TLB* tlb);
 int lookupPageNumber(TLB *tlb, int page_number);
-bool addToTLB(TLB* tlb, int page_number, PageTableEntry** pte);
+int addToTLB(TLB* tlb, int page_number, PageTableEntry** pte);
 void updateTLB(TLB* tlb, int page_number,PageTableEntry** pte);
-void displayStatics();
+void  printTLBEntries(TLB* tlb);
 
 #endif //OS_MIDSEM_PROJECT_TLB_H

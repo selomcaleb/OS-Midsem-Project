@@ -138,23 +138,3 @@ int memoryUtilizedByProcess(FrameTable *frameTable, int processID){
     }
     return framesOccupied;
 }
-//int main() {
-//    FrameTable frameTable;
-//    initializeFrameTable(&frameTable);
-//    printf("The number of free frames is %d\n", trackNumberFreeFrames(&frameTable));
-//	frameTable.frames[0].pageNumber = 100;
-//    int index = firstFreeFrame(&frameTable);
-//    printf("First free frame is %d\n", index);
-//    frameTable.frames[index].pageNumber = 1;
-//    frameTable.frames[index].frameNumber = 2;
-//
-//    printf("Page number is %d\n", frameTable.frames[index].pageNumber );
-//	int allocated = frameIsAllocated(&frameTable, 0);
-//	if (allocated == 0){
-//		printf("Frame has been allocated\n");
-//	}
-//	printf("The number of free frames is %d\n", trackNumberFreeFrames(&frameTable));
-//	printf("The number of allocated frames is %d\n", trackNumberAllocatedFrames(&frameTable));
-//
-//    return 0;
-//}
