@@ -103,11 +103,20 @@ int frameIsAllocated(FrameTable* frameTable, int frame){
 	return 1;
 }
 
+int firstFreeFrame(FrameTable* frameTable){
+    for (int i=0; i<frameTable->capacity;i++){
+        if (frameTable->frames[i].pageNumber ==-1) return i;
+    }
+    return -1;
+}
+
 int main() {
     FrameTable frameTable;
     initializeFrameTable(&frameTable);
     printf("The number of free frames is %d\n", trackNumberFreeFrames(&frameTable));
 	frameTable.frames[0].pageNumber = 100;
+    int index = firstFreeFrame(&frameTable);
+    printf("First free frame is %d\n", index);
 	int allocated = frameIsAllocated(&frameTable, 0);
 	if (allocated == 0){
 		printf("Frame has been allocated\n");
