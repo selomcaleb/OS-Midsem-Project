@@ -45,11 +45,11 @@ int generateOffset(int num) {
 
 /**
  * The function binaryToDecimal converts a binary number to its decimal equivalent.
- * 
+ *
  * @param binary The `binary` parameter in the `binaryToDecimal` function represents a binary number
  * that you want to convert to its decimal equivalent. This function converts a binary number (passed
  * as an integer) to a decimal number and returns the decimal value.
- * 
+ *
  * @return The function `binaryToDecimal` returns the decimal equivalent of the input binary number.
  */
 int binaryToDecimal(int binary) {
@@ -63,4 +63,16 @@ int binaryToDecimal(int binary) {
     }
 
     return decimal;
+}
+
+void printBinary(int num) {
+    // Start from the most significant bit and print each bit
+    for (int i = 3; i >= 0; i--) {
+        // Use bitwise AND to check if the i-th bit is set
+        if (num & (1 << i))
+            printf("1");
+        else
+            printf("0");
+    }
+    printf("\n");
 }

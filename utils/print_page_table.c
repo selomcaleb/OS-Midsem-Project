@@ -3,7 +3,7 @@
 
 void print_page_table(PageTableEntry* pageTable) {
     printf("Page Table:\n");
-    for (int i = 0; i < sizeof(pageTable) / sizeof(pageTable[0]); i++) {
+    for (int i = 0; i < sizeof(pageTable) / sizeof(&pageTable[0]); i++) {
         printf("Page %d - Frame Number: %d, Valid: %d\n", i, pageTable[i].frame_number, pageTable[i].valid);
     }
 }

@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "create_page_table.h"
+#include "utils/create_page_table.h"
 #include <Kernel/stdbool.h>
 #define TLB_SIZE 4
 
@@ -73,7 +73,7 @@ int lookupPageNumber(TLB *tlb, int page_number){
     }
 
 
-    printf("There is a page fault accessing page number %d\n", page_number);
+    //printf("There is a page fault accessing page number %d\n", page_number);
     pagefaults += 1;
     return -1;
 }

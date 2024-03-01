@@ -1,12 +1,11 @@
 #include <stdio.h>
-#include <stdlib.h>
-
-#define NUM_FRAMES 10
+#include "utils/memory_values.h"
 
 // Define the structure for the frame
 typedef struct {
     int frameNumber;
     int pageNumber;
+    int processID;
 } FrameEntry;
 
 /**
@@ -39,6 +38,7 @@ void initializeFrameTable(FrameTable* frameTable) {
     for (int i = 0; i < capacity; i++) {
         frameTable->frames[i].frameNumber = i;
         frameTable->frames[i].pageNumber = -1;
+        frameTable->frames[i].processID = -1;
     }
 }
 
@@ -74,7 +74,7 @@ int trackNumberFreeFrames(FrameTable* frameTable) {
  * `frameTable`.
  */
 
-int trackNumberAllocatedFrames(FrameTable* frameTable){
+int trackNumberAllocatedFrames(FrameTable* frameTable) {
 	int allocatedCount = 0;
 	for (int i=0; i< frameTable->capacity;i++){
 		if (frameTable->frames[i].pageNumber != -1){
@@ -96,37 +96,56 @@ int trackNumberAllocatedFrames(FrameTable* frameTable){
  * @return The function `frameIsAllocated` returns 1 if the frame is allocated (i.e., the page number
  * is not -1 in the frame table), and it returns 0 if the frame is not allocated.
  */
-int frameIsAllocated(FrameTable* frameTable, int frame){
+int frameIsAllocated(FrameTable* frameTable, int frame) {
 	if (frameTable->frames[frame].pageNumber!=-1){
 		return 0;
 	}
 	return 1;
 }
 
-int firstFreeFrame(FrameTable* frameTable){
+/**
+ * The function `firstFreeFrame` returns the index of the first free frame in a FrameTable structure.
+ * 
+ * @param frameTable The `frameTable` parameter is a pointer to a `FrameTable` struct. The `FrameTable`
+ * struct likely contains information about the frames in a memory system, such as an array of frames.
+ * The function `firstFreeFrame` iterates through the frames in the `frameTable` to
+ * 
+ * @return If a free frame is found in the frame table, the index of that frame is returned. If no free
+ * frame is found, -1 is returned.
+ */
+int firstFreeFrame(FrameTable* frameTable) {
     for (int i=0; i<frameTable->capacity;i++){
         if (frameTable->frames[i].pageNumber ==-1) return i;
     }
     return -1;
 }
 
-int main() {
-    FrameTable frameTable;
-    initializeFrameTable(&frameTable);
-    printf("The number of free frames is %d\n", trackNumberFreeFrames(&frameTable));
-	frameTable.frames[0].pageNumber = 100;
-    int index = firstFreeFrame(&frameTable);
-    printf("First free frame is %d\n", index);
-    frameTable.frames[index].pageNumber = 1;
-    frameTable.frames[index].frameNumber = 2;
-
-    printf("Page number is %d\n", frameTable.frames[index].pageNumber );
-	int allocated = frameIsAllocated(&frameTable, 0);
-	if (allocated == 0){
-		printf("Frame has been allocated\n");
-	}
-	printf("The number of free frames is %d\n", trackNumberFreeFrames(&frameTable));
-	printf("The number of allocated frames is %d\n", trackNumberAllocatedFrames(&frameTable));
-
-    return 0;
+void printFrameTable(FrameTable *frameTable) {
+    printf("Frame Table:\n");
+    printf("Capacity: %d\n", frameTable->capacity);
+    printf("Frame Number\tPage Number\n");
+    for (int i = 0; i < frameTable->capacity; i++) {
+        printf("%d\t\t%d\t\t%d\n", frameTable->frames[i].frameNumber, frameTable->frames[i].pageNumber, frameTable->frames[i].processID);
+    }
 }
+
+//int main() {
+//    FrameTable frameTable;
+//    initializeFrameTable(&frameTable);
+//    printf("The number of free frames is %d\n", trackNumberFreeFrames(&frameTable));
+//	frameTable.frames[0].pageNumber = 100;
+//    int index = firstFreeFrame(&frameTable);
+//    printf("First free frame is %d\n", index);
+//    frameTable.frames[index].pageNumber = 1;
+//    frameTable.frames[index].frameNumber = 2;
+//
+//    printf("Page number is %d\n", frameTable.frames[index].pageNumber );
+//	int allocated = frameIsAllocated(&frameTable, 0);
+//	if (allocated == 0){
+//		printf("Frame has been allocated\n");
+//	}
+//	printf("The number of free frames is %d\n", trackNumberFreeFrames(&frameTable));
+//	printf("The number of allocated frames is %d\n", trackNumberAllocatedFrames(&frameTable));
+//
+//    return 0;
+//}
