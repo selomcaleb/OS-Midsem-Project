@@ -85,7 +85,7 @@ bool addToTLB(TLB* tlb, int page_number, PageTableEntry** pte){
 		if (tlb->entries[i].page_number == -1) {
 			tlb->entries[i].page_number = page_number;
 			tlb->entries[i].pte = pte;
-			// tlb->entries[i].lru_counter = tlb->next_lru_counter++;
+			tlb->entries[i].lru_counter = tlb->next_lru_counter++;
 			return true;
 		}
 	}
@@ -105,7 +105,7 @@ void updateTLB(TLB* tlb, int page_number,PageTableEntry** pte) {
     tlb->entries[lru_index].page_number = page_number;
     tlb->entries[lru_index].pte = pte ;
     // Reset LRU counter for the updated entry to mark it as the most recently used
-    // tlb->entries[lru_index].lru_counter = tlb->next_lru_counter++;
+    tlb->entries[lru_index].lru_counter = tlb->next_lru_counter++;
 }
 
 
