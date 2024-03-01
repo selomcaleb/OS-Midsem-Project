@@ -77,6 +77,22 @@ int lookupPageNumber(TLB *tlb, int page_number){
 }
 
 
+void updateTLB(TLB* tlb, int page_number, int frame_number) {
+    int lru_index = 0;
+    // Find the LRU entry
+    for (int i = 1; i < TLB_SIZE; i++) {
+        if (tlb->entries[i].lru_counter < tlb->entries[lru_index].lru_counter) {
+            lru_index = i;
+        }
+    }
+    // Update the LRU entry with new page and frame numbers
+    tlb->entries[lru_index].page_number = page_number;
+    tlb->entries[lru_index].frame_number = frame_number;
+    // Reset LRU counter for the updated entry to mark it as the most recently used
+    tlb->entries[lru_index].lru_counter = tlb->next_lru_counter++;
+}
+
+
 void displayStatics(){
 	printf("The number of page faults are:%d\n", pagefaults);
 	printf("The number of hits are:%d\n", hits);
