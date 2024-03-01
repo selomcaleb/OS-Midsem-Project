@@ -12,9 +12,28 @@
 #define STARLINE "**************************\n"
 #define MASTER_PAGE_SIZE 16
 
+
+//function to display statistics
+
+void displayStatistics(FrameTable *frameTable, int numberAccess, int hits, int pageFaults, int processID){
+    double hit_rate = (hits/numberAccess)*100;
+    int framesOccupied = memoryUtilizedByProcess(frameTable, processID);
+    double memoryUtilized = (framesOccupied/frameTable->capacity)*100;
+    printf("Total number of times process %d tried to access memory is %d:\n",processID, numberAccess);
+    printf("The number of  hits for accessing process %d pages are:\n", processID, hits);
+    printf("The hit rate for process number %f is :\n", processID, hit_rate);
+    printf("The number of page faults for process %d is %d:\n",processID, pageFaults);
+    printf("The memory utilized by process %d is %d\n", processID, memoryUtilized);
+}
 int main() {
+
     // Create the master page table
     PageTableEntry** masterPageTable = createMasterPageTable();
+
+    //intialize the TLB
+    TLB tlb;
+    intializeTLB(&tlb);
+
 
     // Create a frame table
     FrameTable frameTable;
@@ -43,6 +62,11 @@ int main() {
 
         // Create Page Table
         PageTableEntry* pageTable = createPageTable(numPagesRequired);
+        
+        // first check if there are enough free frames for this process pages coming in
+        int freeFrames = trackNumberFreeFrames(&frameTable);
+
+        // if(freeFrames<numPagesRequired){printf("No free frames available"); break}
 
         // Assign Frames To Each Page in the Page Table
         for (int j=0; j<5; j++) {
@@ -52,8 +76,7 @@ int main() {
             frameTable.frames[freeFrame].processID = processes[i].processID;
 
         }
-        TLB tlb;
-        intializeTLB(&tlb);
+        //perform TLB lookup 
         if (lookupPageNumber(&tlb, masterPageIndexBaseTen==-1)){
             printf("There is a page fault accessing the page number %d", masterPageIndexBaseTen);
             if (addToTLB(&tlb, masterPageIndexBaseTen, &pageTable)==false){
@@ -63,7 +86,7 @@ int main() {
 
 
 
-//         Add The Page Table To The Master Page Table
+        //Add The Page Table To The Master Page Table
         masterPageTable[masterPageIndexBaseTen] = pageTable;
     }
     printFrameTable(&frameTable);

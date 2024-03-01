@@ -21,5 +21,5 @@ int trackNumberAllocatedFrames(FrameTable* frameTable);
 int frameIsAllocated(FrameTable* frameTable, int frame);
 int firstFreeFrame(FrameTable* frameTable);
 void printFrameTable(FrameTable *frameTable);
-
+int memoryUtilizedByProcess(FrameTable *frameTable, int processID)
 #endif //OS_MIDSEM_PROJECT_FRAMES_H

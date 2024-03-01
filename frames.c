@@ -129,6 +129,15 @@ void printFrameTable(FrameTable *frameTable) {
     }
 }
 
+int memoryUtilizedByProcess(FrameTable *frameTable, int processID){
+    int framesOccupied = 0;
+    for (int i=0; i<frameTable->capacity;i++){
+    if (frameTable->frames[i].processID== processID){
+        framesOccupied+=1;
+    }
+    }
+    return framesOccupied;
+}
 //int main() {
 //    FrameTable frameTable;
 //    initializeFrameTable(&frameTable);
