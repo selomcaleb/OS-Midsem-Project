@@ -1,5 +1,7 @@
 #include <stdio.h>
-#define TLB_SIZE 4;
+#include "create_page_table.h"
+#include <Kernel/stdbool.h>
+#define TLB_SIZE 4
 
 /**
  * The TLBEntry struct represents an entry in a Translation Lookaside Buffer with page number, frame
@@ -16,13 +18,13 @@
  */
 typedef struct{
 	int page_number;
-	int frame_number;
-	int lru_counter;
-	
+	PageTableEntry** pte;
+	int lru_counter;	
 }TLBEntry;
 
 typedef struct{
 	TLBEntry entries[TLB_SIZE];
+	int next_lru_counter;
 }TLB;
 
 
@@ -40,7 +42,7 @@ int pagefaults = 0;
 void intializeTLB(TLB* tlb){
 	for(int i=0; i<TLB_SIZE; i++){
 		tlb->entries[i].page_number = -1;
-		tlb->entries[i].frame_number = -1;
+		tlb->entries[i].pte = NULL;
 		tlb->entries[i].lru_counter = 0;
 	}
 }
@@ -77,7 +79,21 @@ int lookupPageNumber(TLB *tlb, int page_number){
 }
 
 
-void updateTLB(TLB* tlb, int page_number, int frame_number) {
+bool addToTLB(TLB* tlb, int page_number, PageTableEntry** pte){
+	// check if the TLB is full
+	for (int i = 0; i < TLB_SIZE; i++) {
+		if (tlb->entries[i].page_number == -1) {
+			tlb->entries[i].page_number = page_number;
+			tlb->entries[i].pte = pte;
+			tlb->entries[i].lru_counter = tlb->next_lru_counter++;
+			return true;
+		}
+	}
+	return false;
+
+}
+
+void updateTLB(TLB* tlb, int page_number,PageTableEntry** pte) {
     int lru_index = 0;
     // Find the LRU entry
     for (int i = 1; i < TLB_SIZE; i++) {
@@ -87,7 +103,7 @@ void updateTLB(TLB* tlb, int page_number, int frame_number) {
     }
     // Update the LRU entry with new page and frame numbers
     tlb->entries[lru_index].page_number = page_number;
-    tlb->entries[lru_index].frame_number = frame_number;
+    tlb->entries[lru_index].pte = pte ;
     // Reset LRU counter for the updated entry to mark it as the most recently used
     tlb->entries[lru_index].lru_counter = tlb->next_lru_counter++;
 }
