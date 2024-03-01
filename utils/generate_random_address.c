@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <time.h>
 #include "create_page_table.h"
 
@@ -75,4 +76,12 @@ void printBinary(int num) {
             printf("0");
     }
     printf("\n");
+}
+
+void printGeneratedAddress(int masterPageIndex, int innerPageIndex, int offSet) {
+    // Concatenate the integers
+    long long int address = ((long long int)masterPageIndex << 20) | ((long long int)innerPageIndex << 4) | offSet;
+
+    // Print as 0b memory address
+    printf("0b%016llx\n", address);
 }

@@ -10,29 +10,30 @@
 #include <time.h>
 #include "tlb.h"
 #include <math.h>
-#define STARLINE "**************************\n"
+
 #define MASTER_PAGE_SIZE 16
 #define OFFSET_SIZE 32
 
 
-//function to display statistics
-
-void displayStatistics(FrameTable *frameTable, int numberAccess, int hits, int pageFaults, int processID){
-    double hit_rate = round(((double)hits/numberAccess)*100);
+void displayStatistics(FrameTable *frameTable, int numberAccess, int hits, int pageFaults, int processID) {
+    double hit_rate = round(((double)hits / numberAccess) * 100);
     int framesOccupied = memoryUtilizedByProcess(frameTable, processID);
-    double memoryUtilized = round(((double)framesOccupied/frameTable->capacity)*100);
-    printf("Total number of times process %d tried to access memory is %d:\n",processID, numberAccess);
-    printf("The number of  hits for accessing process %d pages are:%d\n", processID, hits);
-    printf("The hit rate for process number %d is :%.2f%%\n", processID, hit_rate);
-    printf("The number of page faults for process %d is %d:\n",processID, pageFaults);
-    printf("The memory utilized by process %d is %.2f%%\n", processID, memoryUtilized);
-}
-int main() {
+    double memoryUtilized = round(((double)framesOccupied / frameTable->capacity) * 100);
 
+    printf("Printing TLB Statistics For This Page Table From Process With ID = %d\n", processID);
+    printf("+------------+----------------+------+----------+-------------+-------------------+\n");
+    printf("| Process ID | Total Accesses | Hits | Hit Rate | Page Faults | Memory Utilization |\n");
+    printf("+------------+----------------+------+----------+-------------+-------------------+\n");
+    printf("|     %4d   |      %6d     | %4d | %6.2f%% |    %6d    |       %6.2f%%     |\n",
+           processID, numberAccess, hits, hit_rate, pageFaults, memoryUtilized);
+    printf("+------------+----------------+------+----------+-------------+-------------------+\n");
+}
+
+int main() {
     // Create the master page table
     PageTableEntry **masterPageTable = createMasterPageTable();
 
-    //intialize the TLB
+    //initialize the TLB
     TLB tlb;
     intializeTLB(&tlb);
 
@@ -41,33 +42,35 @@ int main() {
     FrameTable frameTable;
     initializeFrameTable(&frameTable);
 
-    printf("Master page table created\n");
-    printf(STARLINE);
+    printf("+-------------------------------Simulation Starting-------------------------------+\n");
+    printf("+------------+----------------+------+----------+-------------+-------------------+\n");
+    printf("+------------+----------------+------+----------+-------------+-------------------+\n");
+    printf("Master Page Table: Size = %d\n", MASTER_PAGE_SIZE);
+    printf("Total Physical Memory: Size = %d\n", PHYSICAL_MEMORY_SIZE);
+    printf("Total Virtual Memory: Size = %d\n", VIRTUAL_MEMORY_SIZE);
+    printf("Page Size = %d\n", PAGE_SIZE);
+    printf("+------------+----------------+------+----------+-------------+-------------------+\n");
 
     // Create the processes
     int NUM_PROCESSES = 6;
 
     Process *processes = createProcesses(NUM_PROCESSES);
-    printf("Processes created\n");
-    printf(STARLINE);
+    printf("+------------+----------------+------+----------+-------------+-------------------+\n");
 
     // Loop through the processes (Simulating FCFS)
     for (int i = 0; i < NUM_PROCESSES; i++) {
+        printf("Process with ID = %d Created...\n", processes[i].processID);
         int memoryRequested = processes[i].memoryRequested;
         int numPagesRequired = calculatePagesRequired(memoryRequested);
-        printf("The number of pages required for process %d are %d\n", i, numPagesRequired);
-        printf("");
-        printf("");
-
-        // Generate random logical address for each page
+        printf("The Number of Pages Required for This Process with ID = %d are %d\n", processes[i].processID, numPagesRequired);
 
         // First generate the master page index (randomly)
         srand(time(NULL));
         int masterPageIndexBaseTen = rand() % MASTER_PAGE_SIZE;
-
-
+        int masterPageIndexBaseTwo = generatePageIndex(masterPageIndexBaseTen);
 
         // Create Page Table
+        printf("Creating Page Table of Size = %d\n", numPagesRequired);
         PageTableEntry *pageTable = createPageTable(numPagesRequired);
 
         //Add The Page Table To The Master Page Table
@@ -81,15 +84,21 @@ int main() {
 
         // assign index to each page entry in the page table
         for (int j = 0; j < numPagesRequired; j++) {
-            int innerPageIndexBaseTen = rand() % numPagesRequired;
+            srand(time(NULL));
+            int innerPageIndexBaseTen = j;
             int innerPageIndexBaseTwo = generatePageIndex(innerPageIndexBaseTen);
             pageIndexesAllocated[j] = innerPageIndexBaseTwo;
-            int offsetBaseTen = rand() * 32;
-            int offsetBaseTwo = generatePageIndex(offsetBaseTen);
+            int offsetBaseTen = rand() * numPagesRequired;
+            int offsetBaseTwo = generateOffset(offsetBaseTen);
             offsetsAllocated[j] = offsetBaseTwo;
+
+            // Generate random logical address for each page
+            printf("Page Entry #%d has a logical address of ", innerPageIndexBaseTen);
+            printGeneratedAddress(masterPageIndexBaseTwo, innerPageIndexBaseTwo, offsetBaseTwo);
         }
+        printf("+------------+----------------+------+----------+-------------+-------------------+\n");
 
-
+        printf("Assigning Frames To Each Page in the Page Table\n");
         // first check if there are enough free frames for this process pages coming in
         int freeFrames = trackNumberFreeFrames(&frameTable);
 
@@ -97,7 +106,6 @@ int main() {
             printf("No free frames available\n");
             break;
         }
-
 
         //Assign Frames To Each Page in the Page Table
         for (int k = 0; k < numPagesRequired; k++) {
@@ -107,13 +115,18 @@ int main() {
             frameTable.frames[freeFrame].processID = processes[i].processID;
 
             //updating inner page table
-            pageTable[k].frame_number =freeFrame;
+            pageTable[k].frame_number=freeFrame;
+            printf("Assigned Page Entry #%d to Frame Number #%d\n", k, freeFrame);
         }
+
+        printf("Added New Page Table to Master Page Table. Index in Master Page Table = %d\n", masterPageIndexBaseTen);
+        printf("+------------+----------------+------+----------+-------------+-------------------+\n");
+
 
         int pageFaults = 0;
         int hits = 0;
         int numberAccess = 0;
-
+        printf("Trying To Access Page Table From The TLB...\n");
         for (int l = 0; l < sizeof(pageIndexesAllocated) / sizeof(pageIndexesAllocated[0]); l++) {
             //perform TLB lookup
 
@@ -122,32 +135,30 @@ int main() {
             numberAccess += 1;
             if (lookup == -1) {
                 pageFaults += 1;
-                printf("There is a page fault accessing the page number %d\n", masterPageIndexBaseTen);
+                printf("There is a Page Fault Accessing the Page Table with Index = %d From The TLB\n", masterPageIndexBaseTen);
+                printf("Now Adding to the TLB...\n");
                 if (addToTLB(&tlb, masterPageIndexBaseTen, &pageTable) == 0) {
                     printf("Could not add to TLB\n");
                     updateTLB(&tlb, masterPageIndexBaseTen, &pageTable);
-                    // access the frame
-                    PageTableEntry *entry = masterPageTable[masterPageIndexBaseTen];
 
+                    // access the frame
+                    PageTableEntry* entry = masterPageTable[masterPageIndexBaseTen];
                     int frameNumber = entry->frame_number;
-                    printf("The frame number for page number %d of process number %d is: %d\n", pageIndexesAllocated[l],
+                    printf("The Frame Number for Page Entry #%d of Process Number %d is: %d\n", pageIndexesAllocated[l],
                            processes[i].processID, frameNumber);
                 }
             } else {
                 hits += 1;
                 PageTableEntry* entry = masterPageTable[masterPageIndexBaseTen];
                 int frameNumber = entry->frame_number;
-                printf("The frame number for page number %d of process number %d is: %d\n", pageIndexesAllocated[l],processes[i].processID, frameNumber);
-
+                printf("The Frame Number for Page Entry #%d of Process Number %d is: %d\n", pageIndexesAllocated[l],
+                       processes[i].processID, frameNumber);
             }
-
         }
+        printf("+------------+----------------+------+----------+-------------+-------------------+\n");
         printFrameTable(&frameTable);
         displayStatistics(&frameTable, numberAccess, hits, pageFaults, processes[i].processID);
         printf("\n");
         printf("\n");
-
-
     }
-
 }

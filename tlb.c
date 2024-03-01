@@ -106,11 +106,15 @@ void updateTLB(TLB* tlb, int page_number,PageTableEntry** pte) {
 }
 
 void printTLBEntries(TLB* tlb) {
-    printf("TLB Entries:\n");
+    printf("Printing TLB Entries\n");
+    printf("+--------------+------------------+--------------+\n");
+    printf("| Page Number  |    PTE Address   | LRU Counter  |\n");
+    printf("+--------------+------------------+--------------+\n");
     for (int i = 0; i < TLB_SIZE; i++) {
-        printf("Entry %d: Page Number = %d, PTE = %p, LRU Counter = %d\n",
-               i, tlb->entries[i].page_number, tlb->entries[i].pte, tlb->entries[i].lru_counter);
+        printf("| %-12d| %-16p| %-13d|\n", tlb->entries[i].page_number,
+               (void*)tlb->entries[i].pte, tlb->entries[i].lru_counter);
     }
+    printf("+--------------+------------------+--------------+\n");
 }
 
 

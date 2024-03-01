@@ -20,6 +20,6 @@ void intializeTLB(TLB* tlb);
 int lookupPageNumber(TLB *tlb, int page_number);
 int addToTLB(TLB* tlb, int page_number, PageTableEntry** pte);
 void updateTLB(TLB* tlb, int page_number,PageTableEntry** pte);
-void  printTLBEntries(TLB* tlb);
+void printTLBEntries(TLB* tlb);
 
 #endif //OS_MIDSEM_PROJECT_TLB_H

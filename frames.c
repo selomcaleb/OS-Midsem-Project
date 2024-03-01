@@ -33,7 +33,6 @@ typedef struct {
 void initializeFrameTable(FrameTable* frameTable) {
     frameTable->capacity = NUM_FRAMES;
     int capacity = frameTable->capacity;
-    printf("capacity is %d\n", capacity);
 
     for (int i = 0; i < capacity; i++) {
         frameTable->frames[i].frameNumber = i;
@@ -120,13 +119,25 @@ int firstFreeFrame(FrameTable* frameTable) {
     return -1;
 }
 
+//void printFrameTable(FrameTable *frameTable) {
+//    printf("Frame Table:\n");
+//    printf("Capacity: %d\n", frameTable->capacity);
+//    printf("Frame Number\tPage Number\n");
+//    for (int i = 0; i < frameTable->capacity; i++) {
+//        printf("%d\t\t%d\t\t%d\n", frameTable->frames[i].frameNumber, frameTable->frames[i].pageNumber, frameTable->frames[i].processID);
+//    }
+//}
 void printFrameTable(FrameTable *frameTable) {
+    printf("Printing The Frame Table...\n");
     printf("Frame Table:\n");
     printf("Capacity: %d\n", frameTable->capacity);
-    printf("Frame Number\tPage Number\n");
+    printf("+-----------------+--------------+------------+\n");
+    printf("| Frame Number    | Page Number  | Process ID |\n");
+    printf("+-----------------+--------------+------------+\n");
     for (int i = 0; i < frameTable->capacity; i++) {
-        printf("%d\t\t%d\t\t%d\n", frameTable->frames[i].frameNumber, frameTable->frames[i].pageNumber, frameTable->frames[i].processID);
+        printf("| %-15d | %-12d | %-10d |\n", frameTable->frames[i].frameNumber, frameTable->frames[i].pageNumber, frameTable->frames[i].processID);
     }
+    printf("+-----------------+--------------+------------+\n");
 }
 
 int memoryUtilizedByProcess(FrameTable *frameTable, int processID){
